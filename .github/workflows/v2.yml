@@ -3,7 +3,7 @@ name: Deploy to Azure App Service V2
 on: workflow_dispatch
 
 env:
-  AZURE_WEBAPP_NAME: oaweb-12836 # set this to your application's name
+  AZURE_WEBAPP_NAME: oaweb-20178 # set this to your application's name
   WORKING_DIRECTORY: '.'         # set this to the path to your path of working directory inside github repository, defaults to the repository root
   PYTHON_VERSION: '3.9' 
   STARTUP_COMMAND: ''           # set this to the startup command required to start the gunicorn server. default it is empty
