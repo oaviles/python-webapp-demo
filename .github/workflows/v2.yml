@@ -31,7 +31,7 @@ jobs:
        creds: ${{ secrets.AZURE_CREDENTIALS }}
   
     - uses: azure/appservice-settings@v1
-       with:
+      with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         mask-inputs: false
         general-settings-json: '{"linuxFxVersion": "PYTHON|${{ env.PYTHON_VERSION }}"}' #'General configuration settings as Key Value pairs'
