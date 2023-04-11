@@ -2,6 +2,12 @@ name: Deploy to Azure App Service V2
 
 on: workflow_dispatch
 
+env:
+  AZURE_WEBAPP_NAME: Python-thecatsaidno # set this to your application's name
+  WORKING_DIRECTORY: '.'         # set this to the path to your path of working directory inside github repository, defaults to the repository root
+  PYTHON_VERSION: '3.9' 
+  STARTUP_COMMAND: ''           # set this to the startup command required to start the gunicorn server. default it is empty
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -20,9 +26,19 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt # Replace this with your requirements file name
 
-    - name: Deploy to Azure Web App
-      run: |
-        az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-        az webapp deployment source config-local-git --name oaweb-12836 --resource-group OA_Zone --query url --output tsv
-        git remote add azure https://github.com/oaviles/python-webapp-demo.git
-        git push azure HEAD:refs/heads/main --force # Change this to your desired branch name
+    - uses: azure/login@v1
+      with:
+       creds: ${{ secrets.AZURE_CREDENTIALS_GITHUB_SECRET }}
+  
+    - uses: azure/appservice-settings@v1
+      with:
+       app-name: ${{ env.AZURE_WEBAPP_NAME }}
+       mask-inputs: false
+       general-settings-json: '{"linuxFxVersion": "PYTHON|${{ env.PYTHON_VERSION }}"}' #'General configuration settings as Key Value pairs'
+  
+  # deploy web app
+    - uses: azure/webapps-deploy@v2
+      with:
+       app-name: ${{ env.AZURE_WEBAPP_NAME }}
+       package: ${{ env.WORKING_DIRECTORY }}
+       startup-command: ${{ env.STARTUP_COMMAND }}
